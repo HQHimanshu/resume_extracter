@@ -1,0 +1,362 @@
+<!-- templates/index.html -->
+
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>AI Resume Extractor • OCR + JSON Schema</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- Bootstrap -->
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+  >
+
+  <!-- Bootstrap Icons -->
+  <link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"
+  >
+
+  <!-- Custom styles -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body class="page-bg">
+
+<nav class="navbar navbar-dark navbar-blur mb-4">
+  <div class="container">
+    <span class="navbar-brand mb-0 h1 d-flex align-items-center gap-2">
+      <i class="bi bi-braces-asterisk"></i>
+      AI Resume Extractor
+    </span>
+    <span class="badge rounded-pill bg-gradient-primary text-uppercase small">
+      Domain 3 • IT Solutions
+    </span>
+  </div>
+</nav>
+
+<div class="container pb-4">
+  <div class="row justify-content-center g-4 align-items-stretch">
+    <!-- Left: Intro / Features -->
+    <div class="col-lg-4">
+      <div class="card card-glass h-100">
+        <div class="card-body">
+          <h2 class="h4 mb-3 d-flex align-items-center gap-2">
+            <i class="bi bi-magic"></i>
+            Smart Parsing Agent
+          </h2>
+          <p class="text-muted small mb-3">
+            Upload any resume and get a structured JSON output that matches the required schema.
+            Handles PDFs, DOCX, TXT, and even image-based resumes via OCR.
+          </p>
+
+          <ul class="feature-list list-unstyled small mb-3">
+            <li><i class="bi bi-check-circle-fill text-success me-2"></i>Multiple formats: PDF / DOCX / TXT / JPG / PNG</li>
+            <li><i class="bi bi-check-circle-fill text-success me-2"></i>OCR for scanned resumes</li>
+            <li><i class="bi bi-check-circle-fill text-success me-2"></i>Extracts education, scores, skills, work experience</li>
+            <li><i class="bi bi-check-circle-fill text-success me-2"></i>Outputs clean JSON aligned with problem schema</li>
+          </ul>
+
+          <div class="small text-muted">
+            <i class="bi bi-lightbulb me-1"></i>
+            Tip: Try with a scanned resume image to see OCR in action.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right: Upload + Results -->
+    <div class="col-lg-8">
+      <div class="card card-glass mb-3">
+        <div class="card-body">
+          <h2 class="h5 mb-3 d-flex align-items-center gap-2">
+            <i class="bi bi-cloud-upload"></i>
+            Upload Resume
+          </h2>
+
+          <form method="POST" enctype="multipart/form-data" id="uploadForm">
+            <div
+              class="upload-dropzone mb-3"
+              id="dropzone"
+            >
+              <input class="form-control d-none" type="file" id="file" name="file" required>
+              <div class="dz-icon mb-2">
+                <i class="bi bi-file-earmark-arrow-up"></i>
+              </div>
+              <p class="mb-1">Drag & drop your resume here</p>
+              <p class="text-muted small mb-2">or click to browse</p>
+              <span class="badge bg-dark-subtle text-dark-emphasis small">
+                Allowed: .pdf, .docx, .txt, .jpg, .jpeg, .png (max 10 MB)
+              </span>
+              <div class="selected-file mt-2 small text-muted" id="selectedFileText">
+                No file selected
+              </div>
+            </div>
+
+            <button type="submit" class="btn btn-gradient w-100 d-flex justify-content-center align-items-center gap-2">
+              <span>Extract JSON</span>
+              <i class="bi bi-arrow-right-circle"></i>
+            </button>
+          </form>
+
+          {% if error %}
+          <div class="alert alert-danger alert-sm mt-3 mb-0 d-flex align-items-center gap-2">
+            <i class="bi bi-exclamation-triangle-fill"></i>
+            <span>{{ error }}</span>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+
+      {% if result %}
+      <div class="card card-glass mb-3">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <h2 class="h5 mb-0 d-flex align-items-center gap-2">
+              <i class="bi bi-person-vcard"></i>
+              Parsed Summary
+            </h2>
+            <span class="badge bg-success-subtle text-success-emphasis small">
+              {{ result.file_name if result.file_name is defined else 'Parsed resume' }}
+            </span>
+          </div>
+
+          <div class="row g-3 small">
+            <div class="col-md-4">
+              <div class="mini-card">
+                <div class="label">Name</div>
+                <div class="value">{{ result.name or "-" }}</div>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="mini-card">
+                <div class="label">Email</div>
+                <div class="value">{{ result.email or "-" }}</div>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="mini-card">
+                <div class="label">Phone</div>
+                <div class="value">{{ result.phoneNumber or result.phone or "-" }}</div>
+              </div>
+            </div>
+
+            <div class="col-12">
+              <div class="mini-card">
+                <div class="label mb-1">Skills</div>
+                <div class="value">
+                  {% if result.skills %}
+                    {% for s in result.skills %}
+                      <span class="badge rounded-pill bg-skill me-1 mb-1">{{ s }}</span>
+                    {% endfor %}
+                  {% else %}
+                    <span class="text-muted">No skills detected from predefined list.</span>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <ul class="nav nav-pills nav-fill mb-3 small" id="resultTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+          <button class="nav-link active" id="edu-tab" data-bs-toggle="tab" data-bs-target="#edu" type="button" role="tab">
+            <i class="bi bi-mortarboard me-1"></i> Education
+          </button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="exp-tab" data-bs-toggle="tab" data-bs-target="#exp" type="button" role="tab">
+            <i class="bi bi-briefcase me-1"></i> Experience
+          </button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="ach-tab" data-bs-toggle="tab" data-bs-target="#ach" type="button" role="tab">
+            <i class="bi bi-trophy me-1"></i> Certifications & Achievements
+          </button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="tests-tab" data-bs-toggle="tab" data-bs-target="#tests" type="button" role="tab">
+            <i class="bi bi-clipboard-pulse me-1"></i> Test Scores
+          </button>
+        </li>
+      </ul>
+
+      <div class="tab-content mb-3" id="resultTabsContent">
+        <!-- Education -->
+        <div class="tab-pane fade show active" id="edu" role="tabpanel">
+          <div class="card card-glass-soft">
+            <div class="card-body">
+<pre class="json-block">{{ {
+  "highSchoolName": result.highSchoolName,
+  "highSchoolGpaOrPercentage": result.highSchoolGpaOrPercentage,
+  "highSchoolGraduationYear": result.highSchoolGraduationYear,
+  "ugCollegeName": result.ugCollegeName,
+  "ugDegree": result.ugDegree,
+  "ugMajor": result.ugMajor,
+  "ugCollegeGpaOrPercentage": result.ugCollegeGpaOrPercentage,
+  "ugGraduationYear": result.ugGraduationYear,
+  "pgCollegeName": result.pgCollegeName,
+  "pgDegree": result.pgDegree,
+  "pgMajor": result.pgMajor,
+  "pgCollegeGpaOrPercentage": result.pgCollegeGpaOrPercentage,
+  "pgGraduationYear": result.pgGraduationYear
+} | tojson(indent=2) }}</pre>
+            </div>
+          </div>
+        </div>
+
+        <!-- Experience -->
+        <div class="tab-pane fade" id="exp" role="tabpanel">
+          <div class="card card-glass-soft">
+            <div class="card-body small">
+              {% if result.workExperience %}
+                <ul class="mb-0">
+                  {% for item in result.workExperience %}
+                    <li>{{ item }}</li>
+                  {% endfor %}
+                </ul>
+              {% else %}
+                <span class="text-muted">No work experience section detected.</span>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+
+        <!-- Certifications & Achievements -->
+        <div class="tab-pane fade" id="ach" role="tabpanel">
+          <div class="card card-glass-soft">
+            <div class="card-body small">
+              <h6>Certifications</h6>
+              {% if result.certifications %}
+                <ul>
+                  {% for item in result.certifications %}
+                    <li>{{ item }}</li>
+                  {% endfor %}
+                </ul>
+              {% else %}
+                <p class="text-muted mb-2">No certifications found.</p>
+              {% endif %}
+
+              <h6 class="mt-3">Achievements</h6>
+              {% if result.achievements %}
+                <ul class="mb-0">
+                  {% for item in result.achievements %}
+                    <li>{{ item }}</li>
+                  {% endfor %}
+                </ul>
+              {% else %}
+                <p class="text-muted mb-0">No achievements found.</p>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+
+        <!-- Test Scores -->
+        <div class="tab-pane fade" id="tests" role="tabpanel">
+          <div class="card card-glass-soft">
+            <div class="card-body">
+<pre class="json-block">{{ result.testScores | tojson(indent=2) }}</pre>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Full JSON -->
+      <div class="card card-glass">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <h2 class="h5 mb-0 d-flex align-items-center gap-2">
+              <i class="bi bi-code-slash"></i>
+              Full JSON Schema Output
+            </h2>
+            <button
+              class="btn btn-sm btn-outline-light d-flex align-items-center gap-1"
+              id="copyJsonBtn"
+              type="button"
+              data-json='{{ result_json | e }}'
+            >
+              <i class="bi bi-clipboard"></i>
+              Copy
+            </button>
+          </div>
+          <pre class="json-block" id="jsonOutput">{{ result_json }}</pre>
+        </div>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<!-- Loading overlay -->
+<div class="loading-overlay d-none" id="loadingOverlay">
+  <div class="loader-card">
+    <div class="spinner-border text-light mb-2" role="status"></div>
+    <div class="small text-white-50">Parsing resume…</div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+// Drag & drop + click upload
+const dropzone = document.getElementById("dropzone");
+const fileInput = document.getElementById("file");
+const selectedFileText = document.getElementById("selectedFileText");
+const form = document.getElementById("uploadForm");
+const overlay = document.getElementById("loadingOverlay");
+const copyBtn = document.getElementById("copyJsonBtn");
+
+if (dropzone && fileInput) {
+  dropzone.addEventListener("click", () => fileInput.click());
+
+  dropzone.addEventListener("dragover", (e) => {
+    e.preventDefault();
+    dropzone.classList.add("upload-dropzone-active");
+  });
+
+  dropzone.addEventListener("dragleave", (e) => {
+    e.preventDefault();
+    dropzone.classList.remove("upload-dropzone-active");
+  });
+
+  dropzone.addEventListener("drop", (e) => {
+    e.preventDefault();
+    dropzone.classList.remove("upload-dropzone-active");
+    if (e.dataTransfer.files.length) {
+      fileInput.files = e.dataTransfer.files;
+      selectedFileText.textContent = e.dataTransfer.files[0].name;
+    }
+  });
+
+  fileInput.addEventListener("change", () => {
+    if (fileInput.files.length) {
+      selectedFileText.textContent = fileInput.files[0].name;
+    } else {
+      selectedFileText.textContent = "No file selected";
+    }
+  });
+}
+
+// Show loading overlay on submit
+if (form && overlay) {
+  form.addEventListener("submit", () => {
+    overlay.classList.remove("d-none");
+  });
+}
+
+// Copy JSON button
+if (copyBtn) {
+  copyBtn.addEventListener("click", () => {
+    const json = copyBtn.getAttribute("data-json") || "";
+    navigator.clipboard.writeText(json).then(() => {
+      copyBtn.innerHTML = '<i class="bi bi-check-circle"></i> Copied';
+      setTimeout(() => {
+        copyBtn.innerHTML = '<i class="bi bi-clipboard"></i> Copy';
+      }, 1500);
+    });
+  });
+}
+</script>
+</body>
+</html>

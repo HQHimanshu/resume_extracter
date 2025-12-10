@@ -1,0 +1,179 @@
+/* static/style.css */
+
+body {
+  background-color: #f5f5f7;
+}
+
+pre {
+  background: #111827;
+  color: #e5e7eb;
+  padding: 12px;
+  border-radius: 10px;
+  font-size: 0.85rem;
+  max-height: 400px;/* static/style.css */
+
+:root {
+  --glass-bg: rgba(15, 23, 42, 0.72);
+  --glass-soft-bg: rgba(15, 23, 42, 0.5);
+  --border-subtle: rgba(148, 163, 184, 0.4);
+}
+
+/* Background */
+.page-bg {
+  min-height: 100vh;
+  background: radial-gradient(circle at top left, #22d3ee 0, transparent 55%),
+              radial-gradient(circle at bottom right, #6366f1 0, #020617 60%);
+  color: #e5e7eb;
+}
+
+/* Navbar */
+.navbar-blur {
+  backdrop-filter: blur(20px);
+  background: linear-gradient(90deg, rgba(15,23,42,0.8), rgba(30,64,175,0.6));
+  border-bottom: 1px solid rgba(148,163,184,0.4);
+}
+
+/* Cards */
+.card-glass {
+  background: var(--glass-bg);
+  border-radius: 18px;
+  border: 1px solid var(--border-subtle);
+  box-shadow: 0 20px 45px rgba(15, 23, 42, 0.65);
+}
+
+.card-glass-soft {
+  background: var(--glass-soft-bg);
+  border-radius: 16px;
+  border: 1px solid rgba(148,163,184,0.25);
+}
+
+/* Upload area */
+.upload-dropzone {
+  border-radius: 16px;
+  border: 1px dashed rgba(148,163,184,0.7);
+  padding: 28px 20px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  background: rgba(15, 23, 42, 0.6);
+}
+
+.upload-dropzone:hover,
+.upload-dropzone-active {
+  border-style: solid;
+  border-color: #38bdf8;
+  box-shadow: 0 0 0 1px rgba(56,189,248,0.6);
+  transform: translateY(-1px);
+}
+
+.dz-icon {
+  font-size: 2.1rem;
+  color: #38bdf8;
+}
+
+.selected-file {
+  opacity: 0.8;
+}
+
+/* Button */
+.btn-gradient {
+  background-image: linear-gradient(90deg, #22c55e, #0ea5e9);
+  border: none;
+  color: #0b1220;
+  font-weight: 600;
+  padding-block: 0.75rem;
+  border-radius: 999px;
+  box-shadow: 0 12px 30px rgba(34,197,94,0.35);
+}
+
+.btn-gradient:hover {
+  filter: brightness(1.05);
+  box-shadow: 0 16px 40px rgba(14,165,233,0.55);
+}
+
+/* Mini info cards */
+.mini-card {
+  background: rgba(15,23,42,0.8);
+  border-radius: 14px;
+  padding: 10px 12px;
+  border: 1px solid rgba(148,163,184,0.5);
+}
+
+.mini-card .label {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #9ca3af;
+}
+
+.mini-card .value {
+  font-size: 0.9rem;
+  margin-top: 2px;
+}
+
+/* Skills badge */
+.bg-skill {
+  background: rgba(56,189,248,0.15);
+  color: #e0f2fe;
+  border: 1px solid rgba(56,189,248,0.5);
+}
+
+/* JSON blocks */
+.json-block {
+  background: #020617;
+  color: #e5e7eb;
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 1px solid rgba(75,85,99,0.9);
+  font-size: 0.8rem;
+  max-height: 360px;
+  overflow: auto;
+}
+
+/* Feature list */
+.feature-list li + li {
+  margin-top: 4px;
+}
+
+/* Smaller alert */
+.alert-sm {
+  padding: 8px 10px;
+  font-size: 0.85rem;
+}
+
+/* Loading overlay */
+.loading-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15,23,42,0.85);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.loader-card {
+  background: rgba(15,23,42,0.9);
+  border-radius: 16px;
+  padding: 16px 20px;
+  border: 1px solid rgba(148,163,184,0.6);
+  text-align: center;
+}
+
+/* Pills */
+.nav-pills .nav-link {
+  border-radius: 999px;
+  border: 1px solid transparent;
+  color: #cbd5f5;
+  background: rgba(15,23,42,0.6);
+}
+
+.nav-pills .nav-link.active {
+  background-image: linear-gradient(90deg, #4f46e5, #0ea5e9);
+  color: #f9fafb;
+  border-color: transparent;
+}
+
+  overflow: auto;
+}
